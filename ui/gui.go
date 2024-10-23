@@ -5,5 +5,5 @@ import (
 )
 
 func Gui() {
-	fmt.Println("Hello")
+	fmt.Println("UI/GUI")
 }
