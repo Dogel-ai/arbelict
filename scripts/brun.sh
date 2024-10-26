@@ -38,7 +38,7 @@ output_name=$1'-'$input_os'-'$input_arch
 if [ $1 = "install" ]; then
     env GOOS=$input_os GOARCH=$input_arch go build -o build/$output_name internal/installer/install.go
 else
-    env GOOS=$input_os GOARCH=$input_arch go build -o build/$output_name cmd/$1/main.go
+    env GOOS=$input_os GOARCH=$input_arch go build -o build/$input_os/$output_name cmd/$1/main.go
 fi
 check_error
 
