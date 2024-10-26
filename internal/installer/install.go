@@ -44,7 +44,7 @@ func main() {
 	}
 
 	log.Print("Cleaning up...")
-	err = os.RemoveAll(workingDir + "/temp")
+	err = os.RemoveAll(filepath.Join(workingDir, "temp"))
 	if err != nil {
 		log.Fatal("Installation failed: ", err)
 	}
