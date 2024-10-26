@@ -9,18 +9,23 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
 func main() {
-	fmt.Println(os.Getwd())
-	version, _, err := userChoice()
+	workingDir, err := os.Getwd()
+	if err != nil {
+		log.Fatal("Installation failed: ", err)
+	}
+
+	version, packageType, err := userChoice()
 	if err != nil {
 		log.Fatal("Installation failed: ", err)
 	}
 
 	// Downloads selected version of arbelict.zip
-	err = downloadBinaries("https://github.com/Dogel-ai/arbelict/releases", version)
+	err = downloadBinaries("https://github.com/Dogel-ai/arbelict/releases", version, workingDir)
 	if err != nil {
 		log.Fatal("Installation failed: ", err)
 	}
@@ -32,6 +37,19 @@ func main() {
 		log.Fatal("Installation failed: ", err)
 	}
 	log.Print("Files extracted successfully.")
+
+	err = pickFiles(packageType, workingDir)
+	if err != nil {
+		log.Fatal("Installation failed: ", err)
+	}
+
+	log.Print("Cleaning up...")
+	err = os.RemoveAll(workingDir + "/temp")
+	if err != nil {
+		log.Fatal("Installation failed: ", err)
+	}
+
+	log.Print("Installation complete.")
 }
 
 func userChoice() (version string, packageType string, err error) {
@@ -62,15 +80,10 @@ func userChoice() (version string, packageType string, err error) {
 	return version, packageType, nil
 }
 
-func downloadBinaries(packageRoot string, version string) error {
+func downloadBinaries(packageRoot, version, workingDir string) error {
 	packageSource := fmt.Sprintf("%s/download/%s/arbelict.zip", packageRoot, version)
 	if version == "latest" {
 		packageSource = fmt.Sprintf("%s/latest/download/arbelict.zip", packageRoot)
-	}
-
-	workingDir, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("error getting current working directory: %w", err)
 	}
 
 	tempDir := filepath.Join(workingDir, "temp")
@@ -166,5 +179,61 @@ func unzipArchive(src, dest string) error {
 		}
 	}
 
+	return nil
+}
+
+func pickFiles(packageType, workingDir string) error {
+	tempDir := filepath.Join(workingDir, "temp")
+	sourceDir := filepath.Join(tempDir, runtime.GOOS)
+
+	configSource := filepath.Join(tempDir, "config.yaml")
+	configDestination := filepath.Join(workingDir, "config.yaml")
+	copyFile(configSource, configDestination)
+
+	currType := packageType
+	i := 1
+
+	if packageType == "both" {
+		currType = "cli"
+		i = 0
+	}
+
+	for ; i < 2; i++ {
+		binaryFilename := fmt.Sprintf("%s-%s-%s", currType, runtime.GOOS, runtime.GOARCH)
+		if runtime.GOOS == "windows" {
+			binaryFilename += ".exe"
+		}
+		destinationFile := filepath.Join(workingDir, binaryFilename)
+
+		sourceFile := filepath.Join(sourceDir, binaryFilename)
+		copyFile(sourceFile, destinationFile)
+		currType = "gui"
+	}
+
+	return nil
+}
+
+func copyFile(source, destination string) error {
+	srcFile, err := os.Open(source)
+	if err != nil {
+		return fmt.Errorf("failed opening file: %w", err)
+	}
+	defer srcFile.Close()
+
+	destFile, err := os.Create(destination)
+	if err != nil {
+		return fmt.Errorf("failed creating file: %w", err)
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, srcFile)
+	if err != nil {
+		return fmt.Errorf("failed copying file: %w", err)
+	}
+
+	err = destFile.Sync()
+	if err != nil {
+		return fmt.Errorf("failed syncing file: %w", err)
+	}
 	return nil
 }
