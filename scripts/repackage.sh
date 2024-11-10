@@ -8,8 +8,8 @@ build() {
 }
 
 rm ../build/install*
-rm ../build/cli*
-rm ../build/gui*
+rm -r ../build/windows/
+rm -r ../build/linux/
 rm ../build/arbelict.zip
 
 build install
