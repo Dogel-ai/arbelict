@@ -218,10 +218,12 @@ func pickFiles(packageType, workingDir string) error {
 
 	for ; i < 2; i++ {
 		binaryFilename := fmt.Sprintf("%s-%s-%s", currType, runtime.GOOS, runtime.GOARCH)
+		destinationFilename := fmt.Sprintf("arbelict-%s", currType)
+
 		if runtime.GOOS == "windows" {
 			binaryFilename += ".exe"
 		}
-		destinationFile := filepath.Join(workingDir, binaryFilename)
+		destinationFile := filepath.Join(workingDir, destinationFilename)
 
 		sourceFile := filepath.Join(sourceDir, binaryFilename)
 		copyFile(sourceFile, destinationFile)
@@ -249,9 +251,15 @@ func copyFile(source, destination string) error {
 		return fmt.Errorf("failed copying file: %w", err)
 	}
 
+	err = destFile.Chmod(0755)
+	if err != nil {
+		return fmt.Errorf("failed setting file permissions: %w", err)
+	}
+
 	err = destFile.Sync()
 	if err != nil {
 		return fmt.Errorf("failed syncing file: %w", err)
 	}
+
 	return nil
 }
