@@ -222,6 +222,7 @@ func pickFiles(packageType, workingDir string) error {
 
 		if runtime.GOOS == "windows" {
 			binaryFilename += ".exe"
+			destinationFilename += ".exe"
 		}
 		destinationFile := filepath.Join(workingDir, destinationFilename)
 
@@ -260,6 +261,5 @@ func copyFile(source, destination string) error {
 	if err != nil {
 		return fmt.Errorf("failed syncing file: %w", err)
 	}
-
 	return nil
 }
