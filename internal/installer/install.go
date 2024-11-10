@@ -57,6 +57,24 @@ func userChoice() (version string, packageType string, err error) {
 	packageType = "both"
 	scanner := bufio.NewScanner(os.Stdin)
 
+	fmt.Print(`
+
+
+
+ ▄▄▄       ██▀███   ▄▄▄▄   ▓█████  ██▓     ██▓ ▄████▄  ▄▄▄█████▓
+▒████▄    ▓██ ▒ ██▒▓█████▄ ▓█   ▀ ▓██▒    ▓██▒▒██▀ ▀█  ▓  ██▒ ▓▒
+▒██  ▀█▄  ▓██ ░▄█ ▒▒██▒ ▄██▒███   ▒██░    ▒██▒▒▓█    ▄ ▒ ▓██░ ▒░
+░██▄▄▄▄██ ▒██▀▀█▄  ▒██░█▀  ▒▓█  ▄ ▒██░    ░██░▒▓▓▄ ▄██▒░ ▓██▓ ░ 
+ ▓█   ▓██▒░██▓ ▒██▒░▓█  ▀█▓░▒████▒░██████▒░██░▒ ▓███▀ ░  ▒██▒ ░ 
+ ▒▒   ▓▒█░░ ▒▓ ░▒▓░░▒▓███▀▒░░ ▒░ ░░ ▒░▓  ░░▓  ░ ░▒ ▒  ░  ▒ ░░   
+  ▒   ▒▒ ░  ░▒ ░ ▒░▒░▒   ░  ░ ░  ░░ ░ ▒  ░ ▒ ░  ░  ▒       ░    
+  ░   ▒     ░░   ░  ░    ░    ░     ░ ░    ▒ ░░          ░      
+      ░  ░   ░      ░         ░  ░    ░  ░ ░  ░ ░               
+                         ░                    ░                 
+						 
+						 
+`)
+
 	fmt.Println("Which binaries do you want to download? (cli/gui/both):")
 	fmt.Print("(default=both) ")
 	scanner.Scan()
